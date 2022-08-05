@@ -71,7 +71,7 @@ final class DeviceDetectorFactory implements FactoryInterface
 
             if (is_string($config['cache'])) {
                 $cacheStorage = $container->get($config['cache']);
-            } elseif ($config['cache'] instanceof StorageInterface) {
+            } else {
                 $cacheStorage = $config['cache'];
             }
 
