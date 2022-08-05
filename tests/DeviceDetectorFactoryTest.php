@@ -850,4 +850,77 @@ final class DeviceDetectorFactoryTest extends TestCase
 
         self::assertSame($cacheStorage, $storage->getValue($simpleCache));
     }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
+     */
+    public function testInvokeWithConfig7(): void
+    {
+        $headerValue = 'test-header';
+        $config      = [
+            'discard-bot-information' => 0,
+            'skip-bot-detection' => 0,
+            'cache' => null,
+        ];
+
+        $header = $this->getMockBuilder(HeaderInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $header->expects(self::once())
+            ->method('getFieldValue')
+            ->willReturn($headerValue);
+
+        $headers = $this->getMockBuilder(Headers::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $headers->expects(self::once())
+            ->method('get')
+            ->with('user-agent')
+            ->willReturn($header);
+        $headers->expects(self::once())
+            ->method('has')
+            ->with('user-agent')
+            ->willReturn(true);
+        $headers->expects(self::once())
+            ->method('toArray')
+            ->willReturn(['user-agent' => $headerValue]);
+
+        $request = $this->getMockBuilder(Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->expects(self::once())
+            ->method('getHeaders')
+            ->with(null, false)
+            ->willReturn($headers);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive(['Request'], ['config'])
+            ->willReturnOnConsecutiveCalls($request, ['device-detector' => $config]);
+        $container->expects(self::never())
+            ->method('has');
+
+        $result = $this->object->__invoke($container, '');
+
+        self::assertInstanceOf(DeviceDetector::class, $result);
+
+        self::assertSame($headerValue, $result->getUserAgent());
+
+        $discard = new ReflectionProperty($result, 'discardBotInformation');
+        $discard->setAccessible(true);
+
+        self::assertFalse($discard->getValue($result));
+
+        $skip = new ReflectionProperty($result, 'skipBotDetection');
+        $skip->setAccessible(true);
+
+        self::assertFalse($skip->getValue($result));
+
+        self::assertInstanceOf(StaticCache::class, $result->getCache());
+    }
 }
