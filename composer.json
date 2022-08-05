@@ -1,6 +1,6 @@
 {
-  "name": "mimmi20/template",
-  "description": "Provides a GitHub repository template for a PHP library, using GitHub actions.",
+  "name": "mimmi20/device-detector-factory",
+  "description": "Provides a factory for matomo/device-detector to use with Laminas",
   "license": "MIT",
   "type": "library",
   "authors": [
@@ -11,25 +11,46 @@
     },
     {
       "name": "Contributors",
-      "homepage": "https://github.com/mimmi20/template/graphs/contributors"
+      "homepage": "https://github.com/mimmi20/device-detector-factory/graphs/contributors"
     }
   ],
-  "homepage": "https://github.com/mimmi20/template",
+  "homepage": "https://github.com/mimmi20/device-detector-factory",
   "support": {
-    "issues": "https://github.com/mimmi20/template/issues",
-    "source": "https://github.com/mimmi20/template"
+    "issues": "https://github.com/mimmi20/device-detector-factory/issues",
+    "source": "https://github.com/mimmi20/device-detector-factory"
   },
   "require": {
     "php": "^8.1.0",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "laminas/laminas-cache": "^3.1.3",
+    "laminas/laminas-cache-storage-implementation": "^1.0.0",
+    "laminas/laminas-http": "^2.15.1",
+    "matomo/device-detector": "^6.0.2"
   },
   "require-dev": {
+    "laminas/laminas-cache-storage-adapter-memory": "^2.0.0",
+    "laminas/laminas-dependency-plugin": "^2.3.0",
+    "laminas/laminas-modulemanager": "^2.11.0",
+    "laminas/laminas-servicemanager": "^3.16.0",
     "mimmi20/coding-standard": "^3.0.3",
     "phpstan/extension-installer": "^1.1.0",
     "phpstan/phpstan": "^1.8.2",
     "phpstan/phpstan-deprecation-rules": "^1.0.0",
     "phpstan/phpstan-phpunit": "^1.1.1",
     "phpunit/phpunit": "^9.5.21"
+  },
+  "suggest": {
+    "laminas/laminas-servicemanager": "Required for the Factories"
+  },
+  "autoload": {
+    "psr-4": {
+      "Mimmi20\\Detector\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Mimmi20Test\\Detector\\": "tests/"
+    }
   },
   "minimum-stability": "stable",
   "prefer-stable": true,
@@ -39,7 +60,14 @@
     "sort-packages": true,
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "phpstan/extension-installer": true
+      "phpstan/extension-installer": true,
+      "laminas/laminas-dependency-plugin": true
+    }
+  },
+  "extra": {
+    "laminas": {
+      "component": "Mimmi20\\Detector",
+      "config-provider": "Mimmi20\\Detector\\ConfigProvider"
     }
   }
 }
