@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\Detector;
 
+use AssertionError;
 use DeviceDetector\Cache\PSR16Bridge;
 use DeviceDetector\Cache\StaticCache;
 use DeviceDetector\DeviceDetector;
@@ -922,5 +923,107 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertFalse($skip->getValue($result));
 
         self::assertInstanceOf(StaticCache::class, $result->getCache());
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
+     */
+    public function testInvokeWithWrongRequest(): void
+    {
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::once())
+            ->method('get')
+            ->with('Request')
+            ->willReturn(null);
+        $container->expects(self::never())
+            ->method('has');
+
+        $this->expectException(AssertionError::class);
+        $this->expectExceptionCode(1);
+        $this->expectExceptionMessage('assert($request instanceof Request)');
+
+        $this->object->__invoke($container, '');
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
+     */
+    public function testInvokeWithWrongHeaders(): void
+    {
+        $request = $this->getMockBuilder(Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->expects(self::once())
+            ->method('getHeaders')
+            ->with(null, false)
+            ->willReturn(null);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::once())
+            ->method('get')
+            ->with('Request')
+            ->willReturn($request);
+        $container->expects(self::never())
+            ->method('has');
+
+        $this->expectException(AssertionError::class);
+        $this->expectExceptionCode(1);
+        $this->expectExceptionMessage('assert($headers instanceof Headers)');
+
+        $this->object->__invoke($container, '');
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
+     */
+    public function testInvokeWithWrongHeader(): void
+    {
+        $headers = $this->getMockBuilder(Headers::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $headers->expects(self::once())
+            ->method('get')
+            ->with('user-agent')
+            ->willReturn(null);
+        $headers->expects(self::once())
+            ->method('has')
+            ->with('user-agent')
+            ->willReturn(true);
+        $headers->expects(self::never())
+            ->method('toArray');
+
+        $request = $this->getMockBuilder(Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->expects(self::once())
+            ->method('getHeaders')
+            ->with(null, false)
+            ->willReturn($headers);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::once())
+            ->method('get')
+            ->with('Request')
+            ->willReturn($request);
+        $container->expects(self::never())
+            ->method('has');
+
+        $this->expectException(AssertionError::class);
+        $this->expectExceptionCode(1);
+        $this->expectExceptionMessage('assert($uaHader instanceof HeaderInterface)');
+
+        $this->object->__invoke($container, '');
     }
 }
