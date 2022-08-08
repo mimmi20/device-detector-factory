@@ -63,5 +63,54 @@ final class ConfigProviderTest extends TestCase
         self::assertIsArray($config);
         self::assertCount(1, $config);
         self::assertArrayHasKey('dependencies', $config);
+
+        $dependencyConfig = $config['dependencies'];
+        self::assertIsArray($dependencyConfig);
+        self::assertCount(1, $dependencyConfig);
+
+        self::assertArrayNotHasKey('delegators', $dependencyConfig);
+        self::assertArrayNotHasKey('initializers', $dependencyConfig);
+        self::assertArrayNotHasKey('invokables', $dependencyConfig);
+        self::assertArrayNotHasKey('services', $dependencyConfig);
+        self::assertArrayNotHasKey('shared', $dependencyConfig);
+        self::assertArrayNotHasKey('abstract_factories', $dependencyConfig);
+        self::assertArrayNotHasKey('aliases', $dependencyConfig);
+
+        self::assertArrayHasKey('factories', $dependencyConfig);
+        $factories = $dependencyConfig['factories'];
+        self::assertIsArray($factories);
+        self::assertCount(1, $factories);
+        self::assertArrayHasKey(DeviceDetector::class, $factories);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function testInvocationReturnsArrayWithDependencies2(): void
+    {
+        $config = $this->provider->__invoke();
+
+        self::assertIsArray($config);
+        self::assertCount(1, $config);
+        self::assertArrayHasKey('dependencies', $config);
+
+        $dependencyConfig = $config['dependencies'];
+        self::assertIsArray($dependencyConfig);
+        self::assertCount(1, $dependencyConfig);
+
+        self::assertArrayNotHasKey('delegators', $dependencyConfig);
+        self::assertArrayNotHasKey('initializers', $dependencyConfig);
+        self::assertArrayNotHasKey('invokables', $dependencyConfig);
+        self::assertArrayNotHasKey('services', $dependencyConfig);
+        self::assertArrayNotHasKey('shared', $dependencyConfig);
+        self::assertArrayNotHasKey('abstract_factories', $dependencyConfig);
+        self::assertArrayNotHasKey('aliases', $dependencyConfig);
+
+        self::assertArrayHasKey('factories', $dependencyConfig);
+        $factories = $dependencyConfig['factories'];
+        self::assertIsArray($factories);
+        self::assertCount(1, $factories);
+        self::assertArrayHasKey(DeviceDetector::class, $factories);
     }
 }

@@ -15,6 +15,7 @@ namespace Mimmi20Test\Detector;
 use AssertionError;
 use DeviceDetector\Cache\PSR16Bridge;
 use DeviceDetector\Cache\StaticCache;
+use DeviceDetector\ClientHints;
 use DeviceDetector\DeviceDetector;
 use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
 use Laminas\Cache\Storage\Capabilities;
@@ -95,6 +96,15 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertFalse($skip->getValue($result));
 
         self::assertInstanceOf(StaticCache::class, $result->getCache());
+
+        $hint = new ReflectionProperty($result, 'clientHints');
+        $hint->setAccessible(true);
+
+        $clientHints = $hint->getValue($result);
+
+        self::assertInstanceOf(ClientHints::class, $clientHints);
+        self::assertSame([], $clientHints->getBrandList());
+        self::assertSame('', $clientHints->getModel());
     }
 
     /**
@@ -163,6 +173,15 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertFalse($skip->getValue($result));
 
         self::assertInstanceOf(StaticCache::class, $result->getCache());
+
+        $hint = new ReflectionProperty($result, 'clientHints');
+        $hint->setAccessible(true);
+
+        $clientHints = $hint->getValue($result);
+
+        self::assertInstanceOf(ClientHints::class, $clientHints);
+        self::assertSame([], $clientHints->getBrandList());
+        self::assertSame('', $clientHints->getModel());
     }
 
     /**
@@ -231,6 +250,15 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertFalse($skip->getValue($result));
 
         self::assertInstanceOf(StaticCache::class, $result->getCache());
+
+        $hint = new ReflectionProperty($result, 'clientHints');
+        $hint->setAccessible(true);
+
+        $clientHints = $hint->getValue($result);
+
+        self::assertInstanceOf(ClientHints::class, $clientHints);
+        self::assertSame([], $clientHints->getBrandList());
+        self::assertSame('', $clientHints->getModel());
     }
 
     /**
@@ -340,6 +368,15 @@ final class DeviceDetectorFactoryTest extends TestCase
         $storage->setAccessible(true);
 
         self::assertSame($cacheStorage, $storage->getValue($simpleCache));
+
+        $hint = new ReflectionProperty($result, 'clientHints');
+        $hint->setAccessible(true);
+
+        $clientHints = $hint->getValue($result);
+
+        self::assertInstanceOf(ClientHints::class, $clientHints);
+        self::assertSame([], $clientHints->getBrandList());
+        self::assertSame('', $clientHints->getModel());
     }
 
     /**
@@ -449,6 +486,15 @@ final class DeviceDetectorFactoryTest extends TestCase
         $storage->setAccessible(true);
 
         self::assertSame($cacheStorage, $storage->getValue($simpleCache));
+
+        $hint = new ReflectionProperty($result, 'clientHints');
+        $hint->setAccessible(true);
+
+        $clientHints = $hint->getValue($result);
+
+        self::assertInstanceOf(ClientHints::class, $clientHints);
+        self::assertSame([], $clientHints->getBrandList());
+        self::assertSame('', $clientHints->getModel());
     }
 
     /**
@@ -558,6 +604,15 @@ final class DeviceDetectorFactoryTest extends TestCase
         $storage->setAccessible(true);
 
         self::assertSame($cacheStorage, $storage->getValue($simpleCache));
+
+        $hint = new ReflectionProperty($result, 'clientHints');
+        $hint->setAccessible(true);
+
+        $clientHints = $hint->getValue($result);
+
+        self::assertInstanceOf(ClientHints::class, $clientHints);
+        self::assertSame([], $clientHints->getBrandList());
+        self::assertSame('', $clientHints->getModel());
     }
 
     /**
@@ -667,6 +722,15 @@ final class DeviceDetectorFactoryTest extends TestCase
         $storage->setAccessible(true);
 
         self::assertSame($cacheStorage, $storage->getValue($simpleCache));
+
+        $hint = new ReflectionProperty($result, 'clientHints');
+        $hint->setAccessible(true);
+
+        $clientHints = $hint->getValue($result);
+
+        self::assertInstanceOf(ClientHints::class, $clientHints);
+        self::assertSame([], $clientHints->getBrandList());
+        self::assertSame('', $clientHints->getModel());
     }
 
     /**
@@ -741,6 +805,15 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertFalse($skip->getValue($result));
 
         self::assertInstanceOf(StaticCache::class, $result->getCache());
+
+        $hint = new ReflectionProperty($result, 'clientHints');
+        $hint->setAccessible(true);
+
+        $clientHints = $hint->getValue($result);
+
+        self::assertInstanceOf(ClientHints::class, $clientHints);
+        self::assertSame([], $clientHints->getBrandList());
+        self::assertSame('', $clientHints->getModel());
     }
 
     /**
@@ -850,6 +923,15 @@ final class DeviceDetectorFactoryTest extends TestCase
         $storage->setAccessible(true);
 
         self::assertSame($cacheStorage, $storage->getValue($simpleCache));
+
+        $hint = new ReflectionProperty($result, 'clientHints');
+        $hint->setAccessible(true);
+
+        $clientHints = $hint->getValue($result);
+
+        self::assertInstanceOf(ClientHints::class, $clientHints);
+        self::assertSame([], $clientHints->getBrandList());
+        self::assertSame('', $clientHints->getModel());
     }
 
     /**
@@ -860,6 +942,12 @@ final class DeviceDetectorFactoryTest extends TestCase
     public function testInvokeWithConfig7(): void
     {
         $headerValue = 'test-header';
+        $model       = 'test-model';
+        $brandList   = [
+            ' Not A;Brand' => '99.0.0.0',
+            'Chromium' => '98.0.4750.0',
+            'Google Chrome' => '98.0.4750.0',
+        ];
         $config      = [
             'discard-bot-information' => 0,
             'skip-bot-detection' => 0,
@@ -886,7 +974,7 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->willReturn(true);
         $headers->expects(self::once())
             ->method('toArray')
-            ->willReturn(['user-agent' => $headerValue]);
+            ->willReturn(['user-agent' => $headerValue, 'sec-ch-ua-model' => $model, 'sec-ch-ua-full-version-list' => '" Not A;Brand";v="99.0.0.0", "Chromium";v="98.0.4750.0", "Google Chrome";v="98.0.4750.0"']);
 
         $request = $this->getMockBuilder(Request::class)
             ->disableOriginalConstructor()
@@ -923,6 +1011,15 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertFalse($skip->getValue($result));
 
         self::assertInstanceOf(StaticCache::class, $result->getCache());
+
+        $hint = new ReflectionProperty($result, 'clientHints');
+        $hint->setAccessible(true);
+
+        $clientHints = $hint->getValue($result);
+
+        self::assertInstanceOf(ClientHints::class, $clientHints);
+        self::assertSame($brandList, $clientHints->getBrandList());
+        self::assertSame($model, $clientHints->getModel());
     }
 
     /**

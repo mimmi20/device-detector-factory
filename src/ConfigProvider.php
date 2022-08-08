@@ -24,9 +24,7 @@ final class ConfigProvider
      */
     public function __invoke(): array
     {
-        return [
-            'dependencies' => $this->getDependencyConfig(),
-        ];
+        return ['dependencies' => $this->getDependencyConfig()];
     }
 
     /**
@@ -37,10 +35,6 @@ final class ConfigProvider
      */
     public function getDependencyConfig(): array
     {
-        return [
-            'factories' => [
-                DeviceDetector::class => DeviceDetectorFactory::class,
-            ],
-        ];
+        return ['factories' => [DeviceDetector::class => DeviceDetectorFactory::class]];
     }
 }
