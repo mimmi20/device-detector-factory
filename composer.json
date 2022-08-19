@@ -24,7 +24,7 @@
     "ext-mbstring": "*",
     "laminas/laminas-cache": "^3.4.0",
     "laminas/laminas-cache-storage-implementation": "^1.0.0",
-    "laminas/laminas-http": "^2.15.1",
+    "laminas/laminas-http": "^2.16.0",
     "matomo/device-detector": "^6.0.2"
   },
   "require-dev": {
