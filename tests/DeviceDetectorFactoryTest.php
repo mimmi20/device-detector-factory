@@ -35,9 +35,7 @@ final class DeviceDetectorFactoryTest extends TestCase
 {
     private DeviceDetectorFactory $object;
 
-    /**
-     * @throws void
-     */
+    /** @throws void */
     protected function setUp(): void
     {
         $this->object = new DeviceDetectorFactory();
