@@ -43,7 +43,7 @@ final class DeviceDetectorFactory implements FactoryInterface
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      */
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): DeviceDetector
+    public function __invoke(ContainerInterface $container, $requestedName, array | null $options = null): DeviceDetector
     {
         $request = $container->get('Request');
         assert($request instanceof Request);
@@ -76,11 +76,7 @@ final class DeviceDetectorFactory implements FactoryInterface
             }
 
             if ($cacheStorage instanceof StorageInterface) {
-                $detector->setCache(
-                    new PSR16Bridge(
-                        new SimpleCacheDecorator($cacheStorage)
-                    )
-                );
+                $detector->setCache(new PSR16Bridge(new SimpleCacheDecorator($cacheStorage)));
             }
         }
 
