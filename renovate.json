@@ -21,5 +21,6 @@
   "platformAutomerge": false,
   "schedule": [
     "at 3am on Friday"
-  ]
+  ],
+  "updateLockFiles": false
 }
