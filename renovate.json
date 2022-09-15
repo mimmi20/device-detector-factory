@@ -18,5 +18,8 @@
   "commitBodyTable": true,
   "enabledManagers": ["composer", "github-actions"],
   "lockFileMaintenance": {"enabled": false, "extends": ["schedule:daily"]},
-  "platformAutomerge": false
+  "platformAutomerge": false,
+  "schedule": [
+    "at 3am on Friday"
+  ]
 }
