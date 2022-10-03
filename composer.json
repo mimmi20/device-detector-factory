@@ -28,6 +28,11 @@
     "matomo/device-detector": "^6.0.3"
   },
   "require-dev": {
+    "ext-dom": "*",
+    "ext-simplexml": "*",
+    "ext-tokenizer": "*",
+    "ext-xml": "*",
+    "ext-xmlwriter": "*",
     "laminas/laminas-cache-storage-adapter-memory": "^2.1.0",
     "laminas/laminas-dependency-plugin": "^2.2.0",
     "laminas/laminas-modulemanager": "^2.12.0",
