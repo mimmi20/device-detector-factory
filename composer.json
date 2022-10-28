@@ -33,7 +33,7 @@
     "ext-tokenizer": "*",
     "ext-xml": "*",
     "ext-xmlwriter": "*",
-    "laminas/laminas-cache-storage-adapter-memory": "^2.1.0",
+    "laminas/laminas-cache-storage-adapter-memory": "^2.2.0",
     "laminas/laminas-dependency-plugin": "^2.2.0",
     "laminas/laminas-modulemanager": "^2.13.0",
     "laminas/laminas-servicemanager": "^3.19.0",
