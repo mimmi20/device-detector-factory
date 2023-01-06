@@ -10,7 +10,7 @@
 
 declare(strict_types = 1);
 
-namespace Mimmi20Test\Detector;
+namespace Mimmi20\Detector;
 
 use DeviceDetector\DeviceDetector;
 use Mimmi20\Detector\ConfigProvider;
@@ -22,6 +22,9 @@ final class ConfigProviderTest extends TestCase
 {
     private ConfigProvider $provider;
 
+    /**
+     * @throws void
+     */
     protected function setUp(): void
     {
         $this->provider = new ConfigProvider();

@@ -10,7 +10,7 @@
 
 declare(strict_types = 1);
 
-namespace Mimmi20Test\Detector;
+namespace Mimmi20\Detector;
 
 use Mimmi20\Detector\Module;
 use PHPUnit\Framework\Exception;

@@ -10,7 +10,7 @@
 
 declare(strict_types = 1);
 
-namespace Mimmi20Test\Detector;
+namespace Mimmi20\Detector;
 
 use AssertionError;
 use DeviceDetector\Cache\PSR16Bridge;

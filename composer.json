@@ -54,7 +54,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Mimmi20Test\\Detector\\": "tests/"
+      "Mimmi20\\Detector\\": "tests/"
     }
   },
   "minimum-stability": "stable",
