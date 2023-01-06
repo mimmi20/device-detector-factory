@@ -34,15 +34,14 @@
     "ext-xml": "*",
     "ext-xmlwriter": "*",
     "laminas/laminas-cache-storage-adapter-memory": "^2.2.0",
-    "laminas/laminas-dependency-plugin": "^2.2.0",
     "laminas/laminas-modulemanager": "^2.14.0",
     "laminas/laminas-servicemanager": "^3.20.0",
-    "mimmi20/coding-standard": "^3.0.20",
+    "mimmi20/coding-standard": "^3.0.24",
     "phpstan/extension-installer": "^1.2.0",
-    "phpstan/phpstan": "^1.9.2",
-    "phpstan/phpstan-deprecation-rules": "^1.0.0",
-    "phpstan/phpstan-phpunit": "^1.3.0",
-    "phpunit/phpunit": "^9.5.26"
+    "phpstan/phpstan": "^1.9.7",
+    "phpstan/phpstan-deprecation-rules": "^1.1.1",
+    "phpstan/phpstan-phpunit": "^1.3.3",
+    "phpunit/phpunit": "^9.5.27"
   },
   "suggest": {
     "laminas/laminas-servicemanager": "Required for the Factories"
@@ -54,7 +53,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Mimmi20Test\\Detector\\": "tests/"
+      "Mimmi20\\Detector\\": "tests/"
     }
   },
   "minimum-stability": "stable",
