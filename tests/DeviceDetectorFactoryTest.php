@@ -23,7 +23,6 @@ use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Header\HeaderInterface;
 use Laminas\Http\Headers;
 use Laminas\Http\PhpEnvironment\Request;
-use Mimmi20\Detector\DeviceDetectorFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;

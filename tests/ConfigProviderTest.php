@@ -13,7 +13,6 @@ declare(strict_types = 1);
 namespace Mimmi20\Detector;
 
 use DeviceDetector\DeviceDetector;
-use Mimmi20\Detector\ConfigProvider;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
@@ -22,9 +21,7 @@ final class ConfigProviderTest extends TestCase
 {
     private ConfigProvider $provider;
 
-    /**
-     * @throws void
-     */
+    /** @throws void */
     protected function setUp(): void
     {
         $this->provider = new ConfigProvider();
