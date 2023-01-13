@@ -25,7 +25,7 @@
     "laminas/laminas-cache": "^3.9.0",
     "laminas/laminas-cache-storage-implementation": "^1.0.0",
     "laminas/laminas-http": "^2.18.0",
-    "matomo/device-detector": "^6.0.4"
+    "matomo/device-detector": "^6.0.5"
   },
   "require-dev": {
     "ext-dom": "*",
