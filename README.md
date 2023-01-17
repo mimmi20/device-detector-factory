@@ -9,6 +9,7 @@
 [![codecov](https://codecov.io/gh/mimmi20/device-detector-factory/branch/master/graph/badge.svg)](https://codecov.io/gh/mimmi20/device-detector-factory)
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/mimmi20/device-detector-factory.svg)](http://isitmaintained.com/project/mimmi20/device-detector-factory "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/mimmi20/device-detector-factory.svg)](http://isitmaintained.com/project/mimmi20/device-detector-factory "Percentage of issues still open")
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fmimmi20%2Fdevice-detector-factory%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/mimmi20/device-detector-factory/master)
 
 ## Requirements
 
