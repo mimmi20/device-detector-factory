@@ -73,8 +73,12 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->getMock();
         $container->expects(self::exactly(2))
             ->method('get')
-            ->withConsecutive(['Request'], ['config'])
-            ->willReturnOnConsecutiveCalls($request, null);
+            ->willReturnMap(
+                [
+                    ['Request', $request],
+                    ['config', null],
+                ],
+            );
         $container->expects(self::never())
             ->method('has');
 
@@ -83,19 +87,16 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertInstanceOf(DeviceDetector::class, $result);
 
         $discard = new ReflectionProperty($result, 'discardBotInformation');
-        $discard->setAccessible(true);
 
         self::assertFalse($discard->getValue($result));
 
         $skip = new ReflectionProperty($result, 'skipBotDetection');
-        $skip->setAccessible(true);
 
         self::assertFalse($skip->getValue($result));
 
         self::assertInstanceOf(StaticCache::class, $result->getCache());
 
         $hint = new ReflectionProperty($result, 'clientHints');
-        $hint->setAccessible(true);
 
         $clientHints = $hint->getValue($result);
 
@@ -148,8 +149,12 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->getMock();
         $container->expects(self::exactly(2))
             ->method('get')
-            ->withConsecutive(['Request'], ['config'])
-            ->willReturnOnConsecutiveCalls($request, ['device-detector' => null]);
+            ->willReturnMap(
+                [
+                    ['Request', $request],
+                    ['config', ['device-detector' => null]],
+                ],
+            );
         $container->expects(self::never())
             ->method('has');
 
@@ -160,19 +165,16 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertSame($headerValue, $result->getUserAgent());
 
         $discard = new ReflectionProperty($result, 'discardBotInformation');
-        $discard->setAccessible(true);
 
         self::assertFalse($discard->getValue($result));
 
         $skip = new ReflectionProperty($result, 'skipBotDetection');
-        $skip->setAccessible(true);
 
         self::assertFalse($skip->getValue($result));
 
         self::assertInstanceOf(StaticCache::class, $result->getCache());
 
         $hint = new ReflectionProperty($result, 'clientHints');
-        $hint->setAccessible(true);
 
         $clientHints = $hint->getValue($result);
 
@@ -225,8 +227,12 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->getMock();
         $container->expects(self::exactly(2))
             ->method('get')
-            ->withConsecutive(['Request'], ['config'])
-            ->willReturnOnConsecutiveCalls($request, ['device-detector' => []]);
+            ->willReturnMap(
+                [
+                    ['Request', $request],
+                    ['config', ['device-detector' => []]],
+                ],
+            );
         $container->expects(self::never())
             ->method('has');
 
@@ -237,19 +243,16 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertSame($headerValue, $result->getUserAgent());
 
         $discard = new ReflectionProperty($result, 'discardBotInformation');
-        $discard->setAccessible(true);
 
         self::assertFalse($discard->getValue($result));
 
         $skip = new ReflectionProperty($result, 'skipBotDetection');
-        $skip->setAccessible(true);
 
         self::assertFalse($skip->getValue($result));
 
         self::assertInstanceOf(StaticCache::class, $result->getCache());
 
         $hint = new ReflectionProperty($result, 'clientHints');
-        $hint->setAccessible(true);
 
         $clientHints = $hint->getValue($result);
 
@@ -329,8 +332,13 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->getMock();
         $container->expects(self::exactly(3))
             ->method('get')
-            ->withConsecutive(['Request'], ['config'], [$cacheKey])
-            ->willReturnOnConsecutiveCalls($request, ['device-detector' => $config], $cacheStorage);
+            ->willReturnMap(
+                [
+                    ['Request', $request],
+                    ['config', ['device-detector' => $config]],
+                    [$cacheKey, $cacheStorage],
+                ],
+            );
         $container->expects(self::never())
             ->method('has');
 
@@ -341,12 +349,10 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertSame($headerValue, $result->getUserAgent());
 
         $discard = new ReflectionProperty($result, 'discardBotInformation');
-        $discard->setAccessible(true);
 
         self::assertFalse($discard->getValue($result));
 
         $skip = new ReflectionProperty($result, 'skipBotDetection');
-        $skip->setAccessible(true);
 
         self::assertFalse($skip->getValue($result));
 
@@ -355,19 +361,16 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertInstanceOf(PSR16Bridge::class, $psr16Cache);
 
         $simple = new ReflectionProperty($psr16Cache, 'cache');
-        $simple->setAccessible(true);
 
         $simpleCache = $simple->getValue($psr16Cache);
 
         self::assertInstanceOf(SimpleCacheDecorator::class, $simpleCache);
 
         $storage = new ReflectionProperty($simpleCache, 'storage');
-        $storage->setAccessible(true);
 
         self::assertSame($cacheStorage, $storage->getValue($simpleCache));
 
         $hint = new ReflectionProperty($result, 'clientHints');
-        $hint->setAccessible(true);
 
         $clientHints = $hint->getValue($result);
 
@@ -447,8 +450,13 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->getMock();
         $container->expects(self::exactly(3))
             ->method('get')
-            ->withConsecutive(['Request'], ['config'], [$cacheKey])
-            ->willReturnOnConsecutiveCalls($request, ['device-detector' => $config], $cacheStorage);
+            ->willReturnMap(
+                [
+                    ['Request', $request],
+                    ['config', ['device-detector' => $config]],
+                    [$cacheKey, $cacheStorage],
+                ],
+            );
         $container->expects(self::never())
             ->method('has');
 
@@ -459,12 +467,10 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertSame($headerValue, $result->getUserAgent());
 
         $discard = new ReflectionProperty($result, 'discardBotInformation');
-        $discard->setAccessible(true);
 
         self::assertTrue($discard->getValue($result));
 
         $skip = new ReflectionProperty($result, 'skipBotDetection');
-        $skip->setAccessible(true);
 
         self::assertTrue($skip->getValue($result));
 
@@ -473,19 +479,16 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertInstanceOf(PSR16Bridge::class, $psr16Cache);
 
         $simple = new ReflectionProperty($psr16Cache, 'cache');
-        $simple->setAccessible(true);
 
         $simpleCache = $simple->getValue($psr16Cache);
 
         self::assertInstanceOf(SimpleCacheDecorator::class, $simpleCache);
 
         $storage = new ReflectionProperty($simpleCache, 'storage');
-        $storage->setAccessible(true);
 
         self::assertSame($cacheStorage, $storage->getValue($simpleCache));
 
         $hint = new ReflectionProperty($result, 'clientHints');
-        $hint->setAccessible(true);
 
         $clientHints = $hint->getValue($result);
 
@@ -565,8 +568,13 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->getMock();
         $container->expects(self::exactly(3))
             ->method('get')
-            ->withConsecutive(['Request'], ['config'], [$cacheKey])
-            ->willReturnOnConsecutiveCalls($request, ['device-detector' => $config], $cacheStorage);
+            ->willReturnMap(
+                [
+                    ['Request', $request],
+                    ['config', ['device-detector' => $config]],
+                    [$cacheKey, $cacheStorage],
+                ],
+            );
         $container->expects(self::never())
             ->method('has');
 
@@ -577,12 +585,10 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertSame($headerValue, $result->getUserAgent());
 
         $discard = new ReflectionProperty($result, 'discardBotInformation');
-        $discard->setAccessible(true);
 
         self::assertTrue($discard->getValue($result));
 
         $skip = new ReflectionProperty($result, 'skipBotDetection');
-        $skip->setAccessible(true);
 
         self::assertTrue($skip->getValue($result));
 
@@ -591,19 +597,16 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertInstanceOf(PSR16Bridge::class, $psr16Cache);
 
         $simple = new ReflectionProperty($psr16Cache, 'cache');
-        $simple->setAccessible(true);
 
         $simpleCache = $simple->getValue($psr16Cache);
 
         self::assertInstanceOf(SimpleCacheDecorator::class, $simpleCache);
 
         $storage = new ReflectionProperty($simpleCache, 'storage');
-        $storage->setAccessible(true);
 
         self::assertSame($cacheStorage, $storage->getValue($simpleCache));
 
         $hint = new ReflectionProperty($result, 'clientHints');
-        $hint->setAccessible(true);
 
         $clientHints = $hint->getValue($result);
 
@@ -683,8 +686,13 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->getMock();
         $container->expects(self::exactly(3))
             ->method('get')
-            ->withConsecutive(['Request'], ['config'], [$cacheKey])
-            ->willReturnOnConsecutiveCalls($request, ['device-detector' => $config], $cacheStorage);
+            ->willReturnMap(
+                [
+                    ['Request', $request],
+                    ['config', ['device-detector' => $config]],
+                    [$cacheKey, $cacheStorage],
+                ],
+            );
         $container->expects(self::never())
             ->method('has');
 
@@ -695,12 +703,10 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertSame($headerValue, $result->getUserAgent());
 
         $discard = new ReflectionProperty($result, 'discardBotInformation');
-        $discard->setAccessible(true);
 
         self::assertFalse($discard->getValue($result));
 
         $skip = new ReflectionProperty($result, 'skipBotDetection');
-        $skip->setAccessible(true);
 
         self::assertFalse($skip->getValue($result));
 
@@ -709,19 +715,16 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertInstanceOf(PSR16Bridge::class, $psr16Cache);
 
         $simple = new ReflectionProperty($psr16Cache, 'cache');
-        $simple->setAccessible(true);
 
         $simpleCache = $simple->getValue($psr16Cache);
 
         self::assertInstanceOf(SimpleCacheDecorator::class, $simpleCache);
 
         $storage = new ReflectionProperty($simpleCache, 'storage');
-        $storage->setAccessible(true);
 
         self::assertSame($cacheStorage, $storage->getValue($simpleCache));
 
         $hint = new ReflectionProperty($result, 'clientHints');
-        $hint->setAccessible(true);
 
         $clientHints = $hint->getValue($result);
 
@@ -780,8 +783,13 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->getMock();
         $container->expects(self::exactly(3))
             ->method('get')
-            ->withConsecutive(['Request'], ['config'], [$cacheKey])
-            ->willReturnOnConsecutiveCalls($request, ['device-detector' => $config], null);
+            ->willReturnMap(
+                [
+                    ['Request', $request],
+                    ['config', ['device-detector' => $config]],
+                    [$cacheKey, null],
+                ],
+            );
         $container->expects(self::never())
             ->method('has');
 
@@ -792,19 +800,16 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertSame($headerValue, $result->getUserAgent());
 
         $discard = new ReflectionProperty($result, 'discardBotInformation');
-        $discard->setAccessible(true);
 
         self::assertFalse($discard->getValue($result));
 
         $skip = new ReflectionProperty($result, 'skipBotDetection');
-        $skip->setAccessible(true);
 
         self::assertFalse($skip->getValue($result));
 
         self::assertInstanceOf(StaticCache::class, $result->getCache());
 
         $hint = new ReflectionProperty($result, 'clientHints');
-        $hint->setAccessible(true);
 
         $clientHints = $hint->getValue($result);
 
@@ -884,8 +889,12 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->getMock();
         $container->expects(self::exactly(2))
             ->method('get')
-            ->withConsecutive(['Request'], ['config'])
-            ->willReturnOnConsecutiveCalls($request, ['device-detector' => $config]);
+            ->willReturnMap(
+                [
+                    ['Request', $request],
+                    ['config', ['device-detector' => $config]],
+                ],
+            );
         $container->expects(self::never())
             ->method('has');
 
@@ -896,12 +905,10 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertSame($headerValue, $result->getUserAgent());
 
         $discard = new ReflectionProperty($result, 'discardBotInformation');
-        $discard->setAccessible(true);
 
         self::assertFalse($discard->getValue($result));
 
         $skip = new ReflectionProperty($result, 'skipBotDetection');
-        $skip->setAccessible(true);
 
         self::assertFalse($skip->getValue($result));
 
@@ -910,19 +917,16 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertInstanceOf(PSR16Bridge::class, $psr16Cache);
 
         $simple = new ReflectionProperty($psr16Cache, 'cache');
-        $simple->setAccessible(true);
 
         $simpleCache = $simple->getValue($psr16Cache);
 
         self::assertInstanceOf(SimpleCacheDecorator::class, $simpleCache);
 
         $storage = new ReflectionProperty($simpleCache, 'storage');
-        $storage->setAccessible(true);
 
         self::assertSame($cacheStorage, $storage->getValue($simpleCache));
 
         $hint = new ReflectionProperty($result, 'clientHints');
-        $hint->setAccessible(true);
 
         $clientHints = $hint->getValue($result);
 
@@ -986,8 +990,12 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->getMock();
         $container->expects(self::exactly(2))
             ->method('get')
-            ->withConsecutive(['Request'], ['config'])
-            ->willReturnOnConsecutiveCalls($request, ['device-detector' => $config]);
+            ->willReturnMap(
+                [
+                    ['Request', $request],
+                    ['config', ['device-detector' => $config]],
+                ],
+            );
         $container->expects(self::never())
             ->method('has');
 
@@ -998,19 +1006,16 @@ final class DeviceDetectorFactoryTest extends TestCase
         self::assertSame($headerValue, $result->getUserAgent());
 
         $discard = new ReflectionProperty($result, 'discardBotInformation');
-        $discard->setAccessible(true);
 
         self::assertFalse($discard->getValue($result));
 
         $skip = new ReflectionProperty($result, 'skipBotDetection');
-        $skip->setAccessible(true);
 
         self::assertFalse($skip->getValue($result));
 
         self::assertInstanceOf(StaticCache::class, $result->getCache());
 
         $hint = new ReflectionProperty($result, 'clientHints');
-        $hint->setAccessible(true);
 
         $clientHints = $hint->getValue($result);
 
