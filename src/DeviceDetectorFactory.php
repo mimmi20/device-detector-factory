@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/device-detector-factory package.
  *
- * Copyright (c) 2022, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2022-2023, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -33,8 +33,8 @@ use function is_string;
 final class DeviceDetectorFactory implements FactoryInterface
 {
     /**
-     * @param string       $requestedName
-     * @param mixed[]|null $options
+     * @param string            $requestedName
+     * @param array<mixed>|null $options
      * @phpstan-param array<mixed>|null $options
      *
      * @throws ContainerExceptionInterface
@@ -43,8 +43,11 @@ final class DeviceDetectorFactory implements FactoryInterface
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array | null $options = null): DeviceDetector
-    {
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        array | null $options = null,
+    ): DeviceDetector {
         $request = $container->get('Request');
         assert($request instanceof Request);
 
