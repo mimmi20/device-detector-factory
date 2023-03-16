@@ -70,8 +70,6 @@ final class DeviceDetectorFactory implements FactoryInterface
         assert(is_array($config));
 
         if (array_key_exists('cache', $config)) {
-            $cacheStorage = null;
-
             if (is_string($config['cache'])) {
                 $cacheStorage = $container->get($config['cache']);
             } else {
