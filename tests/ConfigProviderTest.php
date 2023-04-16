@@ -15,7 +15,6 @@ namespace Mimmi20\Detector;
 use DeviceDetector\DeviceDetector;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class ConfigProviderTest extends TestCase
 {
@@ -27,10 +26,7 @@ final class ConfigProviderTest extends TestCase
         $this->provider = new ConfigProvider();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
+    /** @throws Exception */
     public function testGetDependencyConfig(): void
     {
         $dependencyConfig = $this->provider->getDependencyConfig();
@@ -52,10 +48,7 @@ final class ConfigProviderTest extends TestCase
         self::assertArrayHasKey(DeviceDetector::class, $factories);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
+    /** @throws Exception */
     public function testInvocationReturnsArrayWithDependencies(): void
     {
         $config = ($this->provider)();
@@ -83,10 +76,7 @@ final class ConfigProviderTest extends TestCase
         self::assertArrayHasKey(DeviceDetector::class, $factories);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
+    /** @throws Exception */
     public function testInvocationReturnsArrayWithDependencies2(): void
     {
         $config = $this->provider->__invoke();
