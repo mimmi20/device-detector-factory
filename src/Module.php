@@ -23,6 +23,8 @@ final class Module implements ConfigProviderInterface
      * @phpstan-return array{service_manager: array{factories: array<class-string, class-string>}}
      *
      * @throws void
+     *
+     * @psalm-suppress ReservedWord
      */
     public function getConfig(): array
     {

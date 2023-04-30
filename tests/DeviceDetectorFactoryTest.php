@@ -17,24 +17,33 @@ use DeviceDetector\Cache\PSR16Bridge;
 use DeviceDetector\Cache\StaticCache;
 use DeviceDetector\ClientHints;
 use DeviceDetector\DeviceDetector;
-use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
-use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Header\HeaderInterface;
 use Laminas\Http\Headers;
 use Laminas\Http\PhpEnvironment\Request;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Psr\SimpleCache\CacheInterface;
 use ReflectionException;
 use ReflectionProperty;
 
+/**
+ * @psalm-suppress InternalMethod
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 final class DeviceDetectorFactoryTest extends TestCase
 {
     private DeviceDetectorFactory $object;
 
-    /** @throws void */
+    /**
+     * @throws void
+     *
+     * @psalm-suppress ReservedWord
+     */
     protected function setUp(): void
     {
         $this->object = new DeviceDetectorFactory();
@@ -43,9 +52,208 @@ final class DeviceDetectorFactoryTest extends TestCase
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws ReflectionException
+     */
+    public function testInvokeWithoutRequest(): void
+    {
+        $exceptionMessage = 'test-message';
+        $exception        = new ServiceNotFoundException($exceptionMessage);
+
+        $request = $this->getMockBuilder(Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->expects(self::never())
+            ->method('getHeaders');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::once())
+            ->method('get')
+            ->with('Request')
+            ->willThrowException($exception);
+        $container->expects(self::never())
+            ->method('has');
+
+        try {
+            ($this->object)($container, '');
+
+            self::fail('ServiceNotCreatedException expected');
+        } catch (ServiceNotCreatedException $e) {
+            self::assertSame(0, $e->getCode());
+            self::assertSame($exceptionMessage, $e->getMessage());
+            self::assertSame($exception, $e->getPrevious());
+        }
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function testInvokeWithoutRequest2(): void
+    {
+        $exceptionMessage = 'test-message';
+        $exception        = new ServiceNotCreatedException($exceptionMessage);
+
+        $request = $this->getMockBuilder(Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->expects(self::never())
+            ->method('getHeaders');
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->expects(self::once())
+            ->method('get')
+            ->with('Request')
+            ->willThrowException($exception);
+        $container->expects(self::never())
+            ->method('has');
+
+        try {
+            ($this->object)($container, '');
+
+            self::fail('ServiceNotCreatedException expected');
+        } catch (ServiceNotCreatedException $e) {
+            self::assertSame(0, $e->getCode());
+            self::assertSame($exceptionMessage, $e->getMessage());
+            self::assertSame($exception, $e->getPrevious());
+        }
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function testInvokeWithoutConfig(): void
+    {
+        $exceptionMessage = 'test-message';
+        $exception        = new ServiceNotFoundException($exceptionMessage);
+
+        $headers = $this->getMockBuilder(Headers::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $headers->expects(self::never())
+            ->method('get');
+        $headers->expects(self::once())
+            ->method('has')
+            ->with('user-agent')
+            ->willReturn(false);
+        $headers->expects(self::once())
+            ->method('toArray')
+            ->willReturn([]);
+
+        $request = $this->getMockBuilder(Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->expects(self::once())
+            ->method('getHeaders')
+            ->with(null, false)
+            ->willReturn($headers);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $matcher   = self::exactly(2);
+        $container->expects($matcher)
+            ->method('get')
+            ->willReturnCallback(
+                static function (string $param) use ($request, $matcher, $exception): Request {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame('Request', $param),
+                        2 => self::assertSame(ConfigInterface::class, $param),
+                    };
+
+                    if ($matcher->numberOfInvocations() === 1) {
+                        return $request;
+                    }
+
+                    throw $exception;
+                },
+            );
+        $container->expects(self::never())
+            ->method('has');
+
+        try {
+            ($this->object)($container, '');
+
+            self::fail('ServiceNotCreatedException expected');
+        } catch (ServiceNotCreatedException $e) {
+            self::assertSame(0, $e->getCode());
+            self::assertSame($exceptionMessage, $e->getMessage());
+            self::assertSame($exception, $e->getPrevious());
+        }
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function testInvokeWithoutConfig2(): void
+    {
+        $exceptionMessage = 'test-message';
+        $exception        = new ServiceNotCreatedException($exceptionMessage);
+
+        $headers = $this->getMockBuilder(Headers::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $headers->expects(self::never())
+            ->method('get');
+        $headers->expects(self::once())
+            ->method('has')
+            ->with('user-agent')
+            ->willReturn(false);
+        $headers->expects(self::once())
+            ->method('toArray')
+            ->willReturn([]);
+
+        $request = $this->getMockBuilder(Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $request->expects(self::once())
+            ->method('getHeaders')
+            ->with(null, false)
+            ->willReturn($headers);
+
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $matcher   = self::exactly(2);
+        $container->expects($matcher)
+            ->method('get')
+            ->willReturnCallback(
+                static function (string $param) use ($request, $matcher, $exception): Request {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame('Request', $param),
+                        2 => self::assertSame(ConfigInterface::class, $param),
+                    };
+
+                    if ($matcher->numberOfInvocations() === 1) {
+                        return $request;
+                    }
+
+                    throw $exception;
+                },
+            );
+        $container->expects(self::never())
+            ->method('has');
+
+        try {
+            ($this->object)($container, '');
+
+            self::fail('ServiceNotCreatedException expected');
+        } catch (ServiceNotCreatedException $e) {
+            self::assertSame(0, $e->getCode());
+            self::assertSame($exceptionMessage, $e->getMessage());
+            self::assertSame($exception, $e->getPrevious());
+        }
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function testInvokeWithoutConfig3(): void
     {
         $headers = $this->getMockBuilder(Headers::class)
             ->disableOriginalConstructor()
@@ -71,38 +279,34 @@ final class DeviceDetectorFactoryTest extends TestCase
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $container->expects(self::exactly(2))
+        $matcher   = self::exactly(2);
+        $container->expects($matcher)
             ->method('get')
-            ->willReturnMap(
-                [
-                    ['Request', $request],
-                    ['config', null],
-                ],
+            ->willReturnCallback(
+                static function (string $param) use ($request, $matcher): Request | null {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame('Request', $param),
+                        2 => self::assertSame(ConfigInterface::class, $param),
+                    };
+
+                    return match ($matcher->numberOfInvocations()) {
+                        1 => $request,
+                        2 => null,
+                    };
+                },
             );
         $container->expects(self::never())
             ->method('has');
 
-        $result = $this->object->__invoke($container, '');
+        try {
+            ($this->object)($container, '');
 
-        self::assertInstanceOf(DeviceDetector::class, $result);
-
-        $discard = new ReflectionProperty($result, 'discardBotInformation');
-
-        self::assertFalse($discard->getValue($result));
-
-        $skip = new ReflectionProperty($result, 'skipBotDetection');
-
-        self::assertFalse($skip->getValue($result));
-
-        self::assertInstanceOf(StaticCache::class, $result->getCache());
-
-        $hint = new ReflectionProperty($result, 'clientHints');
-
-        $clientHints = $hint->getValue($result);
-
-        self::assertInstanceOf(ClientHints::class, $clientHints);
-        self::assertSame([], $clientHints->getBrandList());
-        self::assertSame('', $clientHints->getModel());
+            self::fail('AssertionError expected');
+        } catch (AssertionError $e) {
+            self::assertSame(1, $e->getCode());
+            self::assertSame('assert($config instanceof ConfigInterface)', $e->getMessage());
+            self::assertNull($e->getPrevious());
+        }
     }
 
     /**
@@ -110,7 +314,7 @@ final class DeviceDetectorFactoryTest extends TestCase
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
-    public function testInvokeWithEmptyConfig(): void
+    public function testInvokeWithoutCache(): void
     {
         $headerValue = 'test-header';
 
@@ -143,206 +347,53 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->method('getHeaders')
             ->with(null, false)
             ->willReturn($headers);
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::exactly(2))
-            ->method('get')
-            ->willReturnMap(
-                [
-                    ['Request', $request],
-                    ['config', ['device-detector' => null]],
-                ],
-            );
-        $container->expects(self::never())
-            ->method('has');
-
-        $result = $this->object->__invoke($container, '');
-
-        self::assertInstanceOf(DeviceDetector::class, $result);
-
-        self::assertSame($headerValue, $result->getUserAgent());
-
-        $discard = new ReflectionProperty($result, 'discardBotInformation');
-
-        self::assertFalse($discard->getValue($result));
-
-        $skip = new ReflectionProperty($result, 'skipBotDetection');
-
-        self::assertFalse($skip->getValue($result));
-
-        self::assertInstanceOf(StaticCache::class, $result->getCache());
-
-        $hint = new ReflectionProperty($result, 'clientHints');
-
-        $clientHints = $hint->getValue($result);
-
-        self::assertInstanceOf(ClientHints::class, $clientHints);
-        self::assertSame([], $clientHints->getBrandList());
-        self::assertSame('', $clientHints->getModel());
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     * @throws ReflectionException
-     */
-    public function testInvokeWithEmptyConfig2(): void
-    {
-        $headerValue = 'test-header';
-
-        $header = $this->getMockBuilder(HeaderInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $header->expects(self::once())
-            ->method('getFieldValue')
-            ->willReturn($headerValue);
-
-        $headers = $this->getMockBuilder(Headers::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $headers->expects(self::once())
-            ->method('get')
-            ->with('user-agent')
-            ->willReturn($header);
-        $headers->expects(self::once())
-            ->method('has')
-            ->with('user-agent')
-            ->willReturn(true);
-        $headers->expects(self::once())
-            ->method('toArray')
-            ->willReturn(['user-agent' => $headerValue]);
-
-        $request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request->expects(self::once())
-            ->method('getHeaders')
-            ->with(null, false)
-            ->willReturn($headers);
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::exactly(2))
-            ->method('get')
-            ->willReturnMap(
-                [
-                    ['Request', $request],
-                    ['config', ['device-detector' => []]],
-                ],
-            );
-        $container->expects(self::never())
-            ->method('has');
-
-        $result = $this->object->__invoke($container, '');
-
-        self::assertInstanceOf(DeviceDetector::class, $result);
-
-        self::assertSame($headerValue, $result->getUserAgent());
-
-        $discard = new ReflectionProperty($result, 'discardBotInformation');
-
-        self::assertFalse($discard->getValue($result));
-
-        $skip = new ReflectionProperty($result, 'skipBotDetection');
-
-        self::assertFalse($skip->getValue($result));
-
-        self::assertInstanceOf(StaticCache::class, $result->getCache());
-
-        $hint = new ReflectionProperty($result, 'clientHints');
-
-        $clientHints = $hint->getValue($result);
-
-        self::assertInstanceOf(ClientHints::class, $clientHints);
-        self::assertSame([], $clientHints->getBrandList());
-        self::assertSame('', $clientHints->getModel());
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     * @throws ReflectionException
-     */
-    public function testInvokeWithConfig(): void
-    {
-        $headerValue = 'test-header';
-        $cacheKey    = 'data-cache';
-        $config      = [
-            'discard-bot-information' => false,
-            'skip-bot-detection' => false,
-            'cache' => $cacheKey,
-        ];
-
-        $header = $this->getMockBuilder(HeaderInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $header->expects(self::once())
-            ->method('getFieldValue')
-            ->willReturn($headerValue);
-
-        $headers = $this->getMockBuilder(Headers::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $headers->expects(self::once())
-            ->method('get')
-            ->with('user-agent')
-            ->willReturn($header);
-        $headers->expects(self::once())
-            ->method('has')
-            ->with('user-agent')
-            ->willReturn(true);
-        $headers->expects(self::once())
-            ->method('toArray')
-            ->willReturn(['user-agent' => $headerValue]);
-
-        $request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request->expects(self::once())
-            ->method('getHeaders')
-            ->with(null, false)
-            ->willReturn($headers);
-
-        $capabilities = $this->getMockBuilder(Capabilities::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $capabilities->expects(self::once())
-            ->method('getSupportedDatatypes')
-            ->willReturn(['string' => true, 'integer' => true, 'double' => true, 'boolean' => true, 'NULL' => true, 'array' => true, 'object' => true]);
-        $capabilities->expects(self::once())
-            ->method('getMaxKeyLength')
-            ->willReturn(64);
 
         $cacheStorage = $this->getMockBuilder(StorageInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $cacheStorage->expects(self::exactly(2))
-            ->method('getCapabilities')
-            ->willReturn($capabilities);
+        $cacheStorage->expects(self::never())
+            ->method('getCapabilities');
         $cacheStorage->expects(self::never())
             ->method('getOptions');
         $cacheStorage->expects(self::never())
             ->method('setItem');
 
+        $config = $this->getMockBuilder(ConfigInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $config->expects(self::once())
+            ->method('getCache')
+            ->willReturn(null);
+        $config->expects(self::once())
+            ->method('discardBotInformation')
+            ->willReturn(false);
+        $config->expects(self::once())
+            ->method('skipBotDetection')
+            ->willReturn(false);
+
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $container->expects(self::exactly(3))
+        $matcher   = self::exactly(2);
+        $container->expects($matcher)
             ->method('get')
-            ->willReturnMap(
-                [
-                    ['Request', $request],
-                    ['config', ['device-detector' => $config]],
-                    [$cacheKey, $cacheStorage],
-                ],
+            ->willReturnCallback(
+                static function (string $param) use ($request, $matcher, $config): Request | ConfigInterface {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame('Request', $param),
+                        2 => self::assertSame(ConfigInterface::class, $param),
+                    };
+
+                    return match ($matcher->numberOfInvocations()) {
+                        1 => $request,
+                        2 => $config,
+                    };
+                },
             );
         $container->expects(self::never())
             ->method('has');
 
-        $result = $this->object->__invoke($container, '');
+        $result = ($this->object)($container, '');
 
         self::assertInstanceOf(DeviceDetector::class, $result);
 
@@ -358,17 +409,7 @@ final class DeviceDetectorFactoryTest extends TestCase
 
         $psr16Cache = $result->getCache();
 
-        self::assertInstanceOf(PSR16Bridge::class, $psr16Cache);
-
-        $simple = new ReflectionProperty($psr16Cache, 'cache');
-
-        $simpleCache = $simple->getValue($psr16Cache);
-
-        self::assertInstanceOf(SimpleCacheDecorator::class, $simpleCache);
-
-        $storage = new ReflectionProperty($simpleCache, 'storage');
-
-        self::assertSame($cacheStorage, $storage->getValue($simpleCache));
+        self::assertInstanceOf(StaticCache::class, $psr16Cache);
 
         $hint = new ReflectionProperty($result, 'clientHints');
 
@@ -384,15 +425,9 @@ final class DeviceDetectorFactoryTest extends TestCase
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
-    public function testInvokeWithConfig2(): void
+    public function testInvokeWithCache(): void
     {
         $headerValue = 'test-header';
-        $cacheKey    = 'data-cache';
-        $config      = [
-            'discard-bot-information' => true,
-            'skip-bot-detection' => true,
-            'cache' => $cacheKey,
-        ];
 
         $header = $this->getMockBuilder(HeaderInterface::class)
             ->disableOriginalConstructor()
@@ -424,43 +459,50 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->with(null, false)
             ->willReturn($headers);
 
-        $capabilities = $this->getMockBuilder(Capabilities::class)
+        $cacheStorage = $this->getMockBuilder(CacheInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $capabilities->expects(self::once())
-            ->method('getSupportedDatatypes')
-            ->willReturn(['string' => true, 'integer' => true, 'double' => true, 'boolean' => true, 'NULL' => true, 'array' => true, 'object' => true]);
-        $capabilities->expects(self::once())
-            ->method('getMaxKeyLength')
-            ->willReturn(64);
+        $cacheStorage->expects(self::never())
+            ->method('get');
+        $cacheStorage->expects(self::never())
+            ->method('set');
 
-        $cacheStorage = $this->getMockBuilder(StorageInterface::class)
+        $config = $this->getMockBuilder(ConfigInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $cacheStorage->expects(self::exactly(2))
-            ->method('getCapabilities')
-            ->willReturn($capabilities);
-        $cacheStorage->expects(self::never())
-            ->method('getOptions');
-        $cacheStorage->expects(self::never())
-            ->method('setItem');
+        $config->expects(self::once())
+            ->method('getCache')
+            ->willReturn($cacheStorage);
+        $config->expects(self::once())
+            ->method('discardBotInformation')
+            ->willReturn(true);
+        $config->expects(self::once())
+            ->method('skipBotDetection')
+            ->willReturn(true);
 
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $container->expects(self::exactly(3))
+        $matcher   = self::exactly(2);
+        $container->expects($matcher)
             ->method('get')
-            ->willReturnMap(
-                [
-                    ['Request', $request],
-                    ['config', ['device-detector' => $config]],
-                    [$cacheKey, $cacheStorage],
-                ],
+            ->willReturnCallback(
+                static function (string $param) use ($request, $matcher, $config): Request | ConfigInterface {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame('Request', $param),
+                        2 => self::assertSame(ConfigInterface::class, $param),
+                    };
+
+                    return match ($matcher->numberOfInvocations()) {
+                        1 => $request,
+                        2 => $config,
+                    };
+                },
             );
         $container->expects(self::never())
             ->method('has');
 
-        $result = $this->object->__invoke($container, '');
+        $result = ($this->object)($container, '');
 
         self::assertInstanceOf(DeviceDetector::class, $result);
 
@@ -482,11 +524,7 @@ final class DeviceDetectorFactoryTest extends TestCase
 
         $simpleCache = $simple->getValue($psr16Cache);
 
-        self::assertInstanceOf(SimpleCacheDecorator::class, $simpleCache);
-
-        $storage = new ReflectionProperty($simpleCache, 'storage');
-
-        self::assertSame($cacheStorage, $storage->getValue($simpleCache));
+        self::assertSame($cacheStorage, $simpleCache);
 
         $hint = new ReflectionProperty($result, 'clientHints');
 
@@ -500,534 +538,6 @@ final class DeviceDetectorFactoryTest extends TestCase
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws ReflectionException
-     */
-    public function testInvokeWithConfig3(): void
-    {
-        $headerValue = 'test-header';
-        $cacheKey    = 'data-cache';
-        $config      = [
-            'discard-bot-information' => 1,
-            'skip-bot-detection' => 1,
-            'cache' => $cacheKey,
-        ];
-
-        $header = $this->getMockBuilder(HeaderInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $header->expects(self::once())
-            ->method('getFieldValue')
-            ->willReturn($headerValue);
-
-        $headers = $this->getMockBuilder(Headers::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $headers->expects(self::once())
-            ->method('get')
-            ->with('user-agent')
-            ->willReturn($header);
-        $headers->expects(self::once())
-            ->method('has')
-            ->with('user-agent')
-            ->willReturn(true);
-        $headers->expects(self::once())
-            ->method('toArray')
-            ->willReturn(['user-agent' => $headerValue]);
-
-        $request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request->expects(self::once())
-            ->method('getHeaders')
-            ->with(null, false)
-            ->willReturn($headers);
-
-        $capabilities = $this->getMockBuilder(Capabilities::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $capabilities->expects(self::once())
-            ->method('getSupportedDatatypes')
-            ->willReturn(['string' => true, 'integer' => true, 'double' => true, 'boolean' => true, 'NULL' => true, 'array' => true, 'object' => true]);
-        $capabilities->expects(self::once())
-            ->method('getMaxKeyLength')
-            ->willReturn(64);
-
-        $cacheStorage = $this->getMockBuilder(StorageInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $cacheStorage->expects(self::exactly(2))
-            ->method('getCapabilities')
-            ->willReturn($capabilities);
-        $cacheStorage->expects(self::never())
-            ->method('getOptions');
-        $cacheStorage->expects(self::never())
-            ->method('setItem');
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::exactly(3))
-            ->method('get')
-            ->willReturnMap(
-                [
-                    ['Request', $request],
-                    ['config', ['device-detector' => $config]],
-                    [$cacheKey, $cacheStorage],
-                ],
-            );
-        $container->expects(self::never())
-            ->method('has');
-
-        $result = $this->object->__invoke($container, '');
-
-        self::assertInstanceOf(DeviceDetector::class, $result);
-
-        self::assertSame($headerValue, $result->getUserAgent());
-
-        $discard = new ReflectionProperty($result, 'discardBotInformation');
-
-        self::assertTrue($discard->getValue($result));
-
-        $skip = new ReflectionProperty($result, 'skipBotDetection');
-
-        self::assertTrue($skip->getValue($result));
-
-        $psr16Cache = $result->getCache();
-
-        self::assertInstanceOf(PSR16Bridge::class, $psr16Cache);
-
-        $simple = new ReflectionProperty($psr16Cache, 'cache');
-
-        $simpleCache = $simple->getValue($psr16Cache);
-
-        self::assertInstanceOf(SimpleCacheDecorator::class, $simpleCache);
-
-        $storage = new ReflectionProperty($simpleCache, 'storage');
-
-        self::assertSame($cacheStorage, $storage->getValue($simpleCache));
-
-        $hint = new ReflectionProperty($result, 'clientHints');
-
-        $clientHints = $hint->getValue($result);
-
-        self::assertInstanceOf(ClientHints::class, $clientHints);
-        self::assertSame([], $clientHints->getBrandList());
-        self::assertSame('', $clientHints->getModel());
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     * @throws ReflectionException
-     */
-    public function testInvokeWithConfig4(): void
-    {
-        $headerValue = 'test-header';
-        $cacheKey    = 'data-cache';
-        $config      = [
-            'discard-bot-information' => 0,
-            'skip-bot-detection' => 0,
-            'cache' => $cacheKey,
-        ];
-
-        $header = $this->getMockBuilder(HeaderInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $header->expects(self::once())
-            ->method('getFieldValue')
-            ->willReturn($headerValue);
-
-        $headers = $this->getMockBuilder(Headers::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $headers->expects(self::once())
-            ->method('get')
-            ->with('user-agent')
-            ->willReturn($header);
-        $headers->expects(self::once())
-            ->method('has')
-            ->with('user-agent')
-            ->willReturn(true);
-        $headers->expects(self::once())
-            ->method('toArray')
-            ->willReturn(['user-agent' => $headerValue]);
-
-        $request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request->expects(self::once())
-            ->method('getHeaders')
-            ->with(null, false)
-            ->willReturn($headers);
-
-        $capabilities = $this->getMockBuilder(Capabilities::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $capabilities->expects(self::once())
-            ->method('getSupportedDatatypes')
-            ->willReturn(['string' => true, 'integer' => true, 'double' => true, 'boolean' => true, 'NULL' => true, 'array' => true, 'object' => true]);
-        $capabilities->expects(self::once())
-            ->method('getMaxKeyLength')
-            ->willReturn(64);
-
-        $cacheStorage = $this->getMockBuilder(StorageInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $cacheStorage->expects(self::exactly(2))
-            ->method('getCapabilities')
-            ->willReturn($capabilities);
-        $cacheStorage->expects(self::never())
-            ->method('getOptions');
-        $cacheStorage->expects(self::never())
-            ->method('setItem');
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::exactly(3))
-            ->method('get')
-            ->willReturnMap(
-                [
-                    ['Request', $request],
-                    ['config', ['device-detector' => $config]],
-                    [$cacheKey, $cacheStorage],
-                ],
-            );
-        $container->expects(self::never())
-            ->method('has');
-
-        $result = $this->object->__invoke($container, '');
-
-        self::assertInstanceOf(DeviceDetector::class, $result);
-
-        self::assertSame($headerValue, $result->getUserAgent());
-
-        $discard = new ReflectionProperty($result, 'discardBotInformation');
-
-        self::assertFalse($discard->getValue($result));
-
-        $skip = new ReflectionProperty($result, 'skipBotDetection');
-
-        self::assertFalse($skip->getValue($result));
-
-        $psr16Cache = $result->getCache();
-
-        self::assertInstanceOf(PSR16Bridge::class, $psr16Cache);
-
-        $simple = new ReflectionProperty($psr16Cache, 'cache');
-
-        $simpleCache = $simple->getValue($psr16Cache);
-
-        self::assertInstanceOf(SimpleCacheDecorator::class, $simpleCache);
-
-        $storage = new ReflectionProperty($simpleCache, 'storage');
-
-        self::assertSame($cacheStorage, $storage->getValue($simpleCache));
-
-        $hint = new ReflectionProperty($result, 'clientHints');
-
-        $clientHints = $hint->getValue($result);
-
-        self::assertInstanceOf(ClientHints::class, $clientHints);
-        self::assertSame([], $clientHints->getBrandList());
-        self::assertSame('', $clientHints->getModel());
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     * @throws ReflectionException
-     */
-    public function testInvokeWithConfig5(): void
-    {
-        $headerValue = 'test-header';
-        $cacheKey    = 'data-cache';
-        $config      = [
-            'discard-bot-information' => 0,
-            'skip-bot-detection' => 0,
-            'cache' => $cacheKey,
-        ];
-
-        $header = $this->getMockBuilder(HeaderInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $header->expects(self::once())
-            ->method('getFieldValue')
-            ->willReturn($headerValue);
-
-        $headers = $this->getMockBuilder(Headers::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $headers->expects(self::once())
-            ->method('get')
-            ->with('user-agent')
-            ->willReturn($header);
-        $headers->expects(self::once())
-            ->method('has')
-            ->with('user-agent')
-            ->willReturn(true);
-        $headers->expects(self::once())
-            ->method('toArray')
-            ->willReturn(['user-agent' => $headerValue]);
-
-        $request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request->expects(self::once())
-            ->method('getHeaders')
-            ->with(null, false)
-            ->willReturn($headers);
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::exactly(3))
-            ->method('get')
-            ->willReturnMap(
-                [
-                    ['Request', $request],
-                    ['config', ['device-detector' => $config]],
-                    [$cacheKey, null],
-                ],
-            );
-        $container->expects(self::never())
-            ->method('has');
-
-        $result = $this->object->__invoke($container, '');
-
-        self::assertInstanceOf(DeviceDetector::class, $result);
-
-        self::assertSame($headerValue, $result->getUserAgent());
-
-        $discard = new ReflectionProperty($result, 'discardBotInformation');
-
-        self::assertFalse($discard->getValue($result));
-
-        $skip = new ReflectionProperty($result, 'skipBotDetection');
-
-        self::assertFalse($skip->getValue($result));
-
-        self::assertInstanceOf(StaticCache::class, $result->getCache());
-
-        $hint = new ReflectionProperty($result, 'clientHints');
-
-        $clientHints = $hint->getValue($result);
-
-        self::assertInstanceOf(ClientHints::class, $clientHints);
-        self::assertSame([], $clientHints->getBrandList());
-        self::assertSame('', $clientHints->getModel());
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     * @throws ReflectionException
-     */
-    public function testInvokeWithConfig6(): void
-    {
-        $headerValue = 'test-header';
-
-        $capabilities = $this->getMockBuilder(Capabilities::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $capabilities->expects(self::once())
-            ->method('getSupportedDatatypes')
-            ->willReturn(['string' => true, 'integer' => true, 'double' => true, 'boolean' => true, 'NULL' => true, 'array' => true, 'object' => true]);
-        $capabilities->expects(self::once())
-            ->method('getMaxKeyLength')
-            ->willReturn(64);
-
-        $cacheStorage = $this->getMockBuilder(StorageInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $cacheStorage->expects(self::exactly(2))
-            ->method('getCapabilities')
-            ->willReturn($capabilities);
-        $cacheStorage->expects(self::never())
-            ->method('getOptions');
-        $cacheStorage->expects(self::never())
-            ->method('setItem');
-
-        $config = [
-            'discard-bot-information' => 0,
-            'skip-bot-detection' => 0,
-            'cache' => $cacheStorage,
-        ];
-
-        $header = $this->getMockBuilder(HeaderInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $header->expects(self::once())
-            ->method('getFieldValue')
-            ->willReturn($headerValue);
-
-        $headers = $this->getMockBuilder(Headers::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $headers->expects(self::once())
-            ->method('get')
-            ->with('user-agent')
-            ->willReturn($header);
-        $headers->expects(self::once())
-            ->method('has')
-            ->with('user-agent')
-            ->willReturn(true);
-        $headers->expects(self::once())
-            ->method('toArray')
-            ->willReturn(['user-agent' => $headerValue]);
-
-        $request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request->expects(self::once())
-            ->method('getHeaders')
-            ->with(null, false)
-            ->willReturn($headers);
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::exactly(2))
-            ->method('get')
-            ->willReturnMap(
-                [
-                    ['Request', $request],
-                    ['config', ['device-detector' => $config]],
-                ],
-            );
-        $container->expects(self::never())
-            ->method('has');
-
-        $result = $this->object->__invoke($container, '');
-
-        self::assertInstanceOf(DeviceDetector::class, $result);
-
-        self::assertSame($headerValue, $result->getUserAgent());
-
-        $discard = new ReflectionProperty($result, 'discardBotInformation');
-
-        self::assertFalse($discard->getValue($result));
-
-        $skip = new ReflectionProperty($result, 'skipBotDetection');
-
-        self::assertFalse($skip->getValue($result));
-
-        $psr16Cache = $result->getCache();
-
-        self::assertInstanceOf(PSR16Bridge::class, $psr16Cache);
-
-        $simple = new ReflectionProperty($psr16Cache, 'cache');
-
-        $simpleCache = $simple->getValue($psr16Cache);
-
-        self::assertInstanceOf(SimpleCacheDecorator::class, $simpleCache);
-
-        $storage = new ReflectionProperty($simpleCache, 'storage');
-
-        self::assertSame($cacheStorage, $storage->getValue($simpleCache));
-
-        $hint = new ReflectionProperty($result, 'clientHints');
-
-        $clientHints = $hint->getValue($result);
-
-        self::assertInstanceOf(ClientHints::class, $clientHints);
-        self::assertSame([], $clientHints->getBrandList());
-        self::assertSame('', $clientHints->getModel());
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     * @throws ReflectionException
-     */
-    public function testInvokeWithConfig7(): void
-    {
-        $headerValue = 'test-header';
-        $model       = 'test-model';
-        $brandList   = [
-            ' Not A;Brand' => '99.0.0.0',
-            'Chromium' => '98.0.4750.0',
-            'Google Chrome' => '98.0.4750.0',
-        ];
-        $config      = [
-            'discard-bot-information' => 0,
-            'skip-bot-detection' => 0,
-            'cache' => null,
-        ];
-
-        $header = $this->getMockBuilder(HeaderInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $header->expects(self::once())
-            ->method('getFieldValue')
-            ->willReturn($headerValue);
-
-        $headers = $this->getMockBuilder(Headers::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $headers->expects(self::once())
-            ->method('get')
-            ->with('user-agent')
-            ->willReturn($header);
-        $headers->expects(self::once())
-            ->method('has')
-            ->with('user-agent')
-            ->willReturn(true);
-        $headers->expects(self::once())
-            ->method('toArray')
-            ->willReturn(['user-agent' => $headerValue, 'sec-ch-ua-model' => $model, 'sec-ch-ua-full-version-list' => '" Not A;Brand";v="99.0.0.0", "Chromium";v="98.0.4750.0", "Google Chrome";v="98.0.4750.0"']);
-
-        $request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request->expects(self::once())
-            ->method('getHeaders')
-            ->with(null, false)
-            ->willReturn($headers);
-
-        $container = $this->getMockBuilder(ContainerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects(self::exactly(2))
-            ->method('get')
-            ->willReturnMap(
-                [
-                    ['Request', $request],
-                    ['config', ['device-detector' => $config]],
-                ],
-            );
-        $container->expects(self::never())
-            ->method('has');
-
-        $result = $this->object->__invoke($container, '');
-
-        self::assertInstanceOf(DeviceDetector::class, $result);
-
-        self::assertSame($headerValue, $result->getUserAgent());
-
-        $discard = new ReflectionProperty($result, 'discardBotInformation');
-
-        self::assertFalse($discard->getValue($result));
-
-        $skip = new ReflectionProperty($result, 'skipBotDetection');
-
-        self::assertFalse($skip->getValue($result));
-
-        self::assertInstanceOf(StaticCache::class, $result->getCache());
-
-        $hint = new ReflectionProperty($result, 'clientHints');
-
-        $clientHints = $hint->getValue($result);
-
-        self::assertInstanceOf(ClientHints::class, $clientHints);
-        self::assertSame($brandList, $clientHints->getBrandList());
-        self::assertSame($model, $clientHints->getModel());
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     * @throws ReflectionException
      */
     public function testInvokeWithWrongRequest(): void
     {
@@ -1045,13 +555,12 @@ final class DeviceDetectorFactoryTest extends TestCase
         $this->expectExceptionCode(1);
         $this->expectExceptionMessage('assert($request instanceof Request)');
 
-        $this->object->__invoke($container, '');
+        ($this->object)($container, '');
     }
 
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws ReflectionException
      */
     public function testInvokeWithWrongHeaders(): void
     {
@@ -1077,13 +586,12 @@ final class DeviceDetectorFactoryTest extends TestCase
         $this->expectExceptionCode(1);
         $this->expectExceptionMessage('assert($headers instanceof Headers)');
 
-        $this->object->__invoke($container, '');
+        ($this->object)($container, '');
     }
 
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws ReflectionException
      */
     public function testInvokeWithWrongHeader(): void
     {
@@ -1123,6 +631,6 @@ final class DeviceDetectorFactoryTest extends TestCase
         $this->expectExceptionCode(1);
         $this->expectExceptionMessage('assert($uaHader instanceof HeaderInterface)');
 
-        $this->object->__invoke($container, '');
+        ($this->object)($container, '');
     }
 }

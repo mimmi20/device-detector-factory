@@ -16,11 +16,20 @@ use DeviceDetector\DeviceDetector;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @psalm-suppress RedundantCondition
+ * @psalm-suppress RedundantConditionGivenDocblockType
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 final class ConfigProviderTest extends TestCase
 {
     private ConfigProvider $provider;
 
-    /** @throws void */
+    /**
+     * @throws void
+     *
+     * @psalm-suppress ReservedWord
+     */
     protected function setUp(): void
     {
         $this->provider = new ConfigProvider();
@@ -79,7 +88,7 @@ final class ConfigProviderTest extends TestCase
     /** @throws Exception */
     public function testInvocationReturnsArrayWithDependencies2(): void
     {
-        $config = $this->provider->__invoke();
+        $config = ($this->provider)();
 
         self::assertIsArray($config);
         self::assertCount(1, $config);

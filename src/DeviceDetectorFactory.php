@@ -15,20 +15,16 @@ namespace Mimmi20\Detector;
 use DeviceDetector\Cache\PSR16Bridge;
 use DeviceDetector\ClientHints;
 use DeviceDetector\DeviceDetector;
-use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
-use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Header\HeaderInterface;
 use Laminas\Http\Headers;
 use Laminas\Http\PhpEnvironment\Request;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use Psr\SimpleCache\CacheInterface;
 
-use function array_key_exists;
 use function assert;
-use function is_array;
-use function is_string;
 
 final class DeviceDetectorFactory implements FactoryInterface
 {
@@ -37,8 +33,7 @@ final class DeviceDetectorFactory implements FactoryInterface
      * @param array<mixed>|null $options
      * @phpstan-param array<mixed>|null $options
      *
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws ServiceNotCreatedException
      *
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
@@ -48,7 +43,12 @@ final class DeviceDetectorFactory implements FactoryInterface
         $requestedName,
         array | null $options = null,
     ): DeviceDetector {
-        $request = $container->get('Request');
+        try {
+            $request = $container->get('Request');
+        } catch (ContainerExceptionInterface $e) {
+            throw new ServiceNotCreatedException($e->getMessage(), $e->getCode(), $e);
+        }
+
         assert($request instanceof Request);
 
         $detector = new DeviceDetector();
@@ -64,30 +64,22 @@ final class DeviceDetectorFactory implements FactoryInterface
         $clientHints = ClientHints::factory($headers->toArray());
         $detector->setClientHints($clientHints);
 
-        $config = $container->get('config');
-        assert(is_array($config) || null === $config);
-        $config = $config['device-detector'] ?? [];
-        assert(is_array($config));
-
-        if (array_key_exists('cache', $config)) {
-            if (is_string($config['cache'])) {
-                $cacheStorage = $container->get($config['cache']);
-            } else {
-                $cacheStorage = $config['cache'];
-            }
-
-            if ($cacheStorage instanceof StorageInterface) {
-                $detector->setCache(new PSR16Bridge(new SimpleCacheDecorator($cacheStorage)));
-            }
+        try {
+            $config = $container->get(ConfigInterface::class);
+        } catch (ContainerExceptionInterface $e) {
+            throw new ServiceNotCreatedException($e->getMessage(), $e->getCode(), $e);
         }
 
-        if (array_key_exists('discard-bot-information', $config)) {
-            $detector->discardBotInformation((bool) $config['discard-bot-information']);
+        assert($config instanceof ConfigInterface);
+
+        $cacheStorage = $config->getCache();
+
+        if ($cacheStorage instanceof CacheInterface) {
+            $detector->setCache(new PSR16Bridge($cacheStorage));
         }
 
-        if (array_key_exists('skip-bot-detection', $config)) {
-            $detector->skipBotDetection((bool) $config['skip-bot-detection']);
-        }
+        $detector->discardBotInformation($config->discardBotInformation());
+        $detector->skipBotDetection($config->skipBotDetection());
 
         return $detector;
     }
