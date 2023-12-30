@@ -16,20 +16,11 @@ use DeviceDetector\DeviceDetector;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @psalm-suppress RedundantCondition
- * @psalm-suppress RedundantConditionGivenDocblockType
- * @psalm-suppress PropertyNotSetInConstructor
- */
 final class ConfigProviderTest extends TestCase
 {
     private ConfigProvider $provider;
 
-    /**
-     * @throws void
-     *
-     * @psalm-suppress ReservedWord
-     */
+    /** @throws void */
     protected function setUp(): void
     {
         $this->provider = new ConfigProvider();

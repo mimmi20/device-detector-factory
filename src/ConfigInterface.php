@@ -16,24 +16,12 @@ use Psr\SimpleCache\CacheInterface;
 
 interface ConfigInterface
 {
-    /**
-     * @throws void
-     *
-     * @psalm-suppress ReservedWord
-     */
+    /** @throws void */
     public function getCache(): CacheInterface | null;
 
-    /**
-     * @throws void
-     *
-     * @psalm-suppress ReservedWord
-     */
+    /** @throws void */
     public function discardBotInformation(): bool;
 
-    /**
-     * @throws void
-     *
-     * @psalm-suppress ReservedWord
-     */
+    /** @throws void */
     public function skipBotDetection(): bool;
 }

@@ -15,10 +15,6 @@ namespace Mimmi20\Detector;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @psalm-suppress RedundantCondition
- * @psalm-suppress RedundantConditionGivenDocblockType
- */
 final class ModuleTest extends TestCase
 {
     /** @throws Exception */
