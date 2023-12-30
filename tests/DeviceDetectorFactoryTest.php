@@ -31,19 +31,11 @@ use Psr\SimpleCache\CacheInterface;
 use ReflectionException;
 use ReflectionProperty;
 
-/**
- * @psalm-suppress InternalMethod
- * @psalm-suppress PropertyNotSetInConstructor
- */
 final class DeviceDetectorFactoryTest extends TestCase
 {
     private DeviceDetectorFactory $object;
 
-    /**
-     * @throws void
-     *
-     * @psalm-suppress ReservedWord
-     */
+    /** @throws void */
     protected function setUp(): void
     {
         $this->object = new DeviceDetectorFactory();

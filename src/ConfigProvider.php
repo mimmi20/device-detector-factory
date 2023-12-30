@@ -23,8 +23,6 @@ final class ConfigProvider
      * @phpstan-return array{dependencies: array{factories: array<class-string, class-string>}}
      *
      * @throws void
-     *
-     * @psalm-suppress ReservedWord
      */
     public function __invoke(): array
     {
@@ -38,8 +36,6 @@ final class ConfigProvider
      * @phpstan-return array{factories: array<class-string, class-string>}
      *
      * @throws void
-     *
-     * @psalm-suppress ReservedWord
      */
     public function getDependencyConfig(): array
     {
