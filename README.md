@@ -24,11 +24,14 @@ composer require mimmi20/device-detector-factory
 ```
 
 ## Usage with Laminas and Mezzio
+
 You'll need to add configuration and register the services you'd like to use. There are number of ways to do that
 but the recommended way is to create a new config file `config/autoload/detector.config.php`
 
 ## Configuration
+
 config/autoload/detector.config.php
+
 ```php
 <?php
 return [
