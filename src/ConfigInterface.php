@@ -12,12 +12,13 @@ declare(strict_types = 1);
 
 namespace Mimmi20\Detector;
 
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\SimpleCache\CacheInterface;
 
 interface ConfigInterface
 {
     /** @throws void */
-    public function getCache(): CacheInterface | null;
+    public function getCache(): CacheItemPoolInterface | CacheInterface | null;
 
     /** @throws void */
     public function discardBotInformation(): bool;
