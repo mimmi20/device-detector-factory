@@ -13,6 +13,7 @@ declare(strict_types = 1);
 namespace Mimmi20\Detector;
 
 use DeviceDetector\Cache\PSR16Bridge;
+use DeviceDetector\Cache\PSR6Bridge;
 use DeviceDetector\ClientHints;
 use DeviceDetector\DeviceDetector;
 use Laminas\Http\Header\HeaderInterface;
@@ -20,6 +21,7 @@ use Laminas\Http\Headers;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\SimpleCache\CacheInterface;
@@ -76,6 +78,8 @@ final class DeviceDetectorFactory implements FactoryInterface
 
         if ($cacheStorage instanceof CacheInterface) {
             $detector->setCache(new PSR16Bridge($cacheStorage));
+        } elseif ($cacheStorage instanceof CacheItemPoolInterface) {
+            $detector->setCache(new PSR6Bridge($cacheStorage));
         }
 
         $detector->discardBotInformation($config->discardBotInformation());
