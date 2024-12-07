@@ -14,6 +14,7 @@ declare(strict_types = 1);
 namespace Mimmi20\Detector;
 
 use DeviceDetector\DeviceDetector;
+use Override;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -22,6 +23,7 @@ final class ConfigProviderTest extends TestCase
     private ConfigProvider $provider;
 
     /** @throws void */
+    #[Override]
     protected function setUp(): void
     {
         $this->provider = new ConfigProvider();

@@ -22,6 +22,7 @@ use Laminas\Http\Headers;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Override;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -41,6 +42,7 @@ final class DeviceDetectorFactory implements FactoryInterface
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      */
+    #[Override]
     public function __invoke(
         ContainerInterface $container,
         $requestedName,

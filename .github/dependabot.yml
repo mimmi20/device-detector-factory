@@ -33,9 +33,6 @@ updates:
       include: "scope"
       prefix: "composer"
 
-    #allow:
-    #  - '*'
-
     ignore:
       - dependency-name: "psr/container"
       - dependency-name: "psr/simple-cache"
