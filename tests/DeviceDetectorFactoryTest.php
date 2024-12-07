@@ -24,6 +24,7 @@ use Laminas\Http\Headers;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Override;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerExceptionInterface;
@@ -38,6 +39,7 @@ final class DeviceDetectorFactoryTest extends TestCase
     private DeviceDetectorFactory $object;
 
     /** @throws void */
+    #[Override]
     protected function setUp(): void
     {
         $this->object = new DeviceDetectorFactory();
