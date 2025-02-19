@@ -33,19 +33,17 @@ use function assert;
 final class DeviceDetectorFactory implements FactoryInterface
 {
     /**
-     * @param string            $requestedName
      * @param array<mixed>|null $options
      * @phpstan-param array<mixed>|null $options
      *
      * @throws ServiceNotCreatedException
      *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      */
     #[Override]
     public function __invoke(
         ContainerInterface $container,
-        $requestedName,
+        string $requestedName,
         array | null $options = null,
     ): DeviceDetector {
         try {
