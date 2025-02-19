@@ -22,6 +22,7 @@
   "require": {
     "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
     "laminas/laminas-http": "^2.21.0",
+    "laminas/laminas-servicemanager": "^3.23.0",
     "matomo/device-detector": "^6.4.3",
     "psr/cache": "^3.0.0",
     "psr/simple-cache": "^1.0.0 || ^2.0.0 || ^3.0.0"
@@ -35,7 +36,6 @@
     "ext-xmlwriter": "*",
     "infection/infection": "^0.29.12",
     "laminas/laminas-modulemanager": "^2.17.0",
-    "laminas/laminas-servicemanager": "^3.22.1",
     "mimmi20/coding-standard": "^6.0.10",
     "nikic/php-parser": "^5.4.0",
     "phpstan/extension-installer": "^1.4.3",
@@ -52,9 +52,6 @@
     "tomasvotruba/cognitive-complexity": "^1.0.0",
     "tomasvotruba/type-coverage": "^2.0.2",
     "tomasvotruba/unused-public": "^2.0.0"
-  },
-  "suggest": {
-    "laminas/laminas-servicemanager": "Required for the Factories"
   },
   "minimum-stability": "stable",
   "prefer-stable": true,
