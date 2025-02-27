@@ -23,7 +23,7 @@
     "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
     "laminas/laminas-http": "^2.21.0",
     "laminas/laminas-servicemanager": "^3.23.0",
-    "matomo/device-detector": "^6.4.3",
+    "matomo/device-detector": "^6.4.5",
     "psr/cache": "^3.0.0",
     "psr/simple-cache": "^1.0.0 || ^2.0.0 || ^3.0.0"
   },
