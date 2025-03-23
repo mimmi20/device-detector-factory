@@ -24,7 +24,7 @@ use Laminas\Http\Headers;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Override;
+use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerExceptionInterface;
@@ -36,18 +36,10 @@ use ReflectionProperty;
 
 final class DeviceDetectorFactoryTest extends TestCase
 {
-    private DeviceDetectorFactory $object;
-
-    /** @throws void */
-    #[Override]
-    protected function setUp(): void
-    {
-        $this->object = new DeviceDetectorFactory();
-    }
-
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithoutRequest(): void
     {
@@ -71,7 +63,7 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->method('has');
 
         try {
-            ($this->object)($container, '');
+            (new DeviceDetectorFactory())($container, '');
 
             self::fail('ServiceNotCreatedException expected');
         } catch (ServiceNotCreatedException $e) {
@@ -84,6 +76,7 @@ final class DeviceDetectorFactoryTest extends TestCase
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithoutRequest2(): void
     {
@@ -107,7 +100,7 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->method('has');
 
         try {
-            ($this->object)($container, '');
+            (new DeviceDetectorFactory())($container, '');
 
             self::fail('ServiceNotCreatedException expected');
         } catch (ServiceNotCreatedException $e) {
@@ -120,6 +113,7 @@ final class DeviceDetectorFactoryTest extends TestCase
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithoutConfig(): void
     {
@@ -171,7 +165,7 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->method('has');
 
         try {
-            ($this->object)($container, '');
+            (new DeviceDetectorFactory())($container, '');
 
             self::fail('ServiceNotCreatedException expected');
         } catch (ServiceNotCreatedException $e) {
@@ -184,6 +178,7 @@ final class DeviceDetectorFactoryTest extends TestCase
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithoutConfig2(): void
     {
@@ -235,7 +230,7 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->method('has');
 
         try {
-            ($this->object)($container, '');
+            (new DeviceDetectorFactory())($container, '');
 
             self::fail('ServiceNotCreatedException expected');
         } catch (ServiceNotCreatedException $e) {
@@ -248,6 +243,7 @@ final class DeviceDetectorFactoryTest extends TestCase
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithoutConfig3(): void
     {
@@ -295,7 +291,7 @@ final class DeviceDetectorFactoryTest extends TestCase
             ->method('has');
 
         try {
-            ($this->object)($container, '');
+            (new DeviceDetectorFactory())($container, '');
 
             self::fail('AssertionError expected');
         } catch (AssertionError $e) {
@@ -309,6 +305,7 @@ final class DeviceDetectorFactoryTest extends TestCase
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
+     * @throws Exception
      */
     public function testInvokeWithoutCache(): void
     {
@@ -387,7 +384,7 @@ final class DeviceDetectorFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('has');
 
-        $result = ($this->object)($container, '');
+        $result = (new DeviceDetectorFactory())($container, '');
 
         self::assertInstanceOf(DeviceDetector::class, $result);
 
@@ -418,6 +415,7 @@ final class DeviceDetectorFactoryTest extends TestCase
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
+     * @throws Exception
      */
     public function testInvokeWithCache(): void
     {
@@ -496,7 +494,7 @@ final class DeviceDetectorFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('has');
 
-        $result = ($this->object)($container, '');
+        $result = (new DeviceDetectorFactory())($container, '');
 
         self::assertInstanceOf(DeviceDetector::class, $result);
 
@@ -533,6 +531,7 @@ final class DeviceDetectorFactoryTest extends TestCase
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
+     * @throws Exception
      */
     public function testInvokeWithSimpleCache(): void
     {
@@ -611,7 +610,7 @@ final class DeviceDetectorFactoryTest extends TestCase
         $container->expects(self::never())
             ->method('has');
 
-        $result = ($this->object)($container, '');
+        $result = (new DeviceDetectorFactory())($container, '');
 
         self::assertInstanceOf(DeviceDetector::class, $result);
 
@@ -647,6 +646,7 @@ final class DeviceDetectorFactoryTest extends TestCase
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithWrongRequest(): void
     {
@@ -664,12 +664,13 @@ final class DeviceDetectorFactoryTest extends TestCase
         $this->expectExceptionCode(1);
         $this->expectExceptionMessage('assert($request instanceof Request)');
 
-        ($this->object)($container, '');
+        (new DeviceDetectorFactory())($container, '');
     }
 
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithWrongHeaders(): void
     {
@@ -695,12 +696,13 @@ final class DeviceDetectorFactoryTest extends TestCase
         $this->expectExceptionCode(1);
         $this->expectExceptionMessage('assert($headers instanceof Headers)');
 
-        ($this->object)($container, '');
+        (new DeviceDetectorFactory())($container, '');
     }
 
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function testInvokeWithWrongHeader(): void
     {
@@ -740,6 +742,6 @@ final class DeviceDetectorFactoryTest extends TestCase
         $this->expectExceptionCode(1);
         $this->expectExceptionMessage('assert($uaHader instanceof HeaderInterface)');
 
-        ($this->object)($container, '');
+        (new DeviceDetectorFactory())($container, '');
     }
 }
