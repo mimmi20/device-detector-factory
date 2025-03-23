@@ -14,25 +14,15 @@ declare(strict_types = 1);
 namespace Mimmi20\Detector;
 
 use DeviceDetector\DeviceDetector;
-use Override;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 
 final class ConfigProviderTest extends TestCase
 {
-    private ConfigProvider $provider;
-
-    /** @throws void */
-    #[Override]
-    protected function setUp(): void
-    {
-        $this->provider = new ConfigProvider();
-    }
-
     /** @throws Exception */
     public function testGetDependencyConfig(): void
     {
-        $dependencyConfig = $this->provider->getDependencyConfig();
+        $dependencyConfig = (new ConfigProvider())->getDependencyConfig();
         self::assertIsArray($dependencyConfig);
         self::assertCount(1, $dependencyConfig);
 
@@ -54,7 +44,7 @@ final class ConfigProviderTest extends TestCase
     /** @throws Exception */
     public function testInvocationReturnsArrayWithDependencies(): void
     {
-        $config = ($this->provider)();
+        $config = (new ConfigProvider())();
 
         self::assertIsArray($config);
         self::assertCount(1, $config);
@@ -82,7 +72,7 @@ final class ConfigProviderTest extends TestCase
     /** @throws Exception */
     public function testInvocationReturnsArrayWithDependencies2(): void
     {
-        $config = ($this->provider)();
+        $config = (new ConfigProvider())();
 
         self::assertIsArray($config);
         self::assertCount(1, $config);
