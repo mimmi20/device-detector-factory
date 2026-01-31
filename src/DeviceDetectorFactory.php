@@ -27,6 +27,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\SimpleCache\CacheInterface;
+use Throwable;
 
 use function assert;
 
@@ -55,8 +56,13 @@ final class DeviceDetectorFactory implements FactoryInterface
 
         assert($request instanceof Request);
 
-        $detector = new DeviceDetector();
-        $headers  = $request->getHeaders();
+        try {
+            $detector = new DeviceDetector();
+        } catch (Throwable $e) {
+            throw new ServiceNotCreatedException($e->getMessage(), (int) $e->getCode(), $e);
+        }
+
+        $headers = $request->getHeaders();
         assert($headers instanceof Headers);
 
         if ($headers->has('user-agent')) {
