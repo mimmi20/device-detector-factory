@@ -115,6 +115,14 @@ parameters:
 #      message: '~Dead catch - AssertionError is never thrown in the try block~'
 #      path: tests\DeviceDetectorFactoryTest.php
 
+services:
+  errorFormatter.sarif:
+    class: PHPStanSarifErrorFormatter\SarifErrorFormatter
+    arguments:
+      relativePathHelper: @simpleRelativePathHelper
+      currentWorkingDirectory: %currentWorkingDirectory%
+      pretty: true
+
 rules:
   # code complexity
   - Symplify\PHPStanRules\Rules\NoDynamicNameRule
